@@ -41,7 +41,7 @@ def acceptable(data):
     else:
         return True
 
-def find_parent(fid):
+def find_parent(pid):
     try:
         sql = "SELECT comment FROM parent_reply WHERE comment_id = '{}' LIMIT 1".format(pid)
         c.execute(sql)
@@ -53,6 +53,24 @@ def find_parent(fid):
     except Exception as e:
         return False
 
+def sql_insert_replace_comment(commentid,parentid,parent,comment,subreddit,time,score):
+    try:
+        sql="""UPDATE parent_reply SET parent_id=?,comment_id=?,parent=?,comment=?,subreddit=?,unix=?,score=? where parent_id=?;""".format(parentid,commentid,parent,comment,subreddit,time,score,parentid)
+        transaction_bldr
+    except Exception as e:
+        print('replace_comment',str(e))
+
+
+def sql_insert_has_parent(commentid,parentid,parent,comment,subreddit,time,score):
+    try:
+    except Exception as e:
+        print('replace_comment',str(e))
+
+
+def sql_insert_no_parent(commentid,parentid,comment,subreddit,time,score):
+    try:
+    except Exception as e:
+        print('replace_comment',str(e))
 
 if __name__ == "__main__":
     create_table()
@@ -70,12 +88,19 @@ if __name__ == "__main__":
             subreddit = row['subreddit']
             parent_data = find_parent(parent_id)
             print(find_existing_score(parent_id))
+            try:
+                comment_id=
 
             if score >= 2:
                 if acceptable(body):
                     existing_comment_score = find_existing_score(parent_id)
                     if existing_comment_score:
                         if score>existing_comment_score:
-                            pass
+                            sql_insert_replace_comment(comment_id,parent_id,parent_data,body,subreddit,created_utc,score)
+                    else:
+                        if parent_data:
+                            sql_insert_has_parent(comment_id,parent_id,parent_data,body,subreddit,created_utc,score)
+                        else:
+                            sql_insert_no_parent(comment_id,parent_id,body,subreddit,created_utc,score)
 
 
